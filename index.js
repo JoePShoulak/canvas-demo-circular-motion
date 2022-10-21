@@ -5,9 +5,11 @@ import { Particle } from "./lib/Particle.js";
 const canvas = document.getElementById("my-canvas");
 const c = canvas.getContext("2d");
 
-const trailFactor = 0.05;
-const particleCount = 100;
-const followSpeed = 0.05;
+/* == CONSTANTS == */
+const FOLLOW_SPEED = 0.05;
+const TRAIL_FACTOR = 0.05;
+const PARTICLE_COUNT = 100;
+const THICKNESS = 2;
 
 const mouse = {
   x: innerWidth / 2,
@@ -19,45 +21,45 @@ const game = {
   mouse,
 };
 
-let particles = [];
+let particles;
 
+/* == SETUP == */
 const setup = () => {
-  particles = [];
   resizeCanvas(canvas);
 
-  [...Array(particleCount).keys()].forEach(() => {
-    const angle = Math.random() * Math.PI * 2;
-    const p = new Particle(
-      game,
-      innerWidth / 2,
-      innerHeight / 2,
-      2,
-      COLORS[Math.floor(Math.random() * COLORS.length)],
-      angle
-    );
-    particles.push(p);
-  });
+  particles = Array(PARTICLE_COUNT)
+    .fill()
+    .map(() => {
+      const angle = Math.random() * Math.PI * 2;
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+      const x = innerWidth / 2;
+      const y = innerHeight / 2;
+
+      return new Particle(game, x, y, THICKNESS, color, angle);
+    });
 };
 
+/* == ANIMATE == */
 const animate = () => {
   requestAnimationFrame(animate);
 
-  c.fillStyle = `rgb(255, 255, 255, ${trailFactor})`;
+  c.fillStyle = `rgb(255, 255, 255, ${TRAIL_FACTOR})`;
   c.fillRect(0, 0, innerWidth, innerHeight);
 
+  // fOLLOWS THE MOUSE
   particles.forEach((particle) => {
-    const dx = (mouse.x - particle.center.x) * followSpeed;
-    const dy = (mouse.y - particle.center.y) * followSpeed;
+    const dx = (mouse.x - particle.center.x) * FOLLOW_SPEED;
+    const dy = (mouse.y - particle.center.y) * FOLLOW_SPEED;
 
-    particle.center = {
-      x: particle.center.x + dx,
-      y: particle.center.y + dy,
-    };
+    particle.center.x += dx;
+    particle.center.y += dy;
 
     particle.update();
   });
 };
 
+/* == LISTENERS == */
 window.addEventListener("contextmenu", (event) => {
   event.preventDefault();
 
@@ -74,5 +76,12 @@ window.addEventListener("mousemove", (event) => {
   mouse.y = event.y;
 });
 
+window.addEventListener("mouseout", () => {
+  console.log("hit");
+  mouse.x = innerWidth / 2;
+  mouse.y = innerHeight / 2;
+});
+
+/* == INIT == */
 setup();
 animate();
