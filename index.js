@@ -6,6 +6,8 @@ const canvas = document.getElementById("my-canvas");
 const c = canvas.getContext("2d");
 
 const trailFactor = 0.05;
+const particleCount = 100;
+const followSpeed = 0.05;
 
 const mouse = {
   x: innerWidth / 2,
@@ -23,7 +25,7 @@ const setup = () => {
   particles = [];
   resizeCanvas(canvas);
 
-  [...Array(100).keys()].forEach(() => {
+  [...Array(particleCount).keys()].forEach(() => {
     const angle = Math.random() * Math.PI * 2;
     const p = new Particle(
       game,
@@ -44,7 +46,14 @@ const animate = () => {
   c.fillRect(0, 0, innerWidth, innerHeight);
 
   particles.forEach((particle) => {
-    particle.center = { x: mouse.x, y: mouse.y };
+    const dx = (mouse.x - particle.center.x) * followSpeed;
+    const dy = (mouse.y - particle.center.y) * followSpeed;
+
+    particle.center = {
+      x: particle.center.x + dx,
+      y: particle.center.y + dy,
+    };
+
     particle.update();
   });
 };
