@@ -27,6 +27,9 @@ let particles;
 const setup = () => {
   resizeCanvas(canvas);
 
+  c.fillStyle = "#222";
+  c.fillRect(0, 0, innerWidth, innerHeight);
+
   particles = Array(PARTICLE_COUNT)
     .fill()
     .map(() => {
@@ -44,7 +47,7 @@ const setup = () => {
 const animate = () => {
   requestAnimationFrame(animate);
 
-  c.fillStyle = `rgb(255, 255, 255, ${TRAIL_FACTOR})`;
+  c.fillStyle = `rgb(0, 0, 0, ${TRAIL_FACTOR})`;
   c.fillRect(0, 0, innerWidth, innerHeight);
 
   // fOLLOWS THE MOUSE
